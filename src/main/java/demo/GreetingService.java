@@ -2,15 +2,28 @@ package demo;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import reactor.Environment;
+import reactor.fn.Function;
+import reactor.rx.Stream;
+import reactor.rx.Streams;
 
 @Service
 public class GreetingService {
+	@Autowired
+	private Environment env;
 
 	private static final String template = "Hello, %s!";
 	private final AtomicLong counter = new AtomicLong();
 
-	public Greeting provideGreetingFor(String name) {
-		return new Greeting(counter.incrementAndGet(), String.format(template, name));
+	public Stream<Greeting> provideGreetingFor(String name) {
+		return Streams.just(name).dispatchOn(env).map(new Function<String, Greeting>() {
+			@Override
+			public Greeting apply(String t) {
+				return new Greeting(counter.incrementAndGet(), String.format(template, t));
+			}
+		});
 	}
 }

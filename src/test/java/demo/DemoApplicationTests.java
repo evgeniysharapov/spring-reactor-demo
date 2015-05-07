@@ -54,7 +54,7 @@ public class DemoApplicationTests {
 
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk()).andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.content", startsWith("Hello")))
-				.andExpect(jsonPath("$.content", endsWith("Evgeniy")));
+				.andExpect(jsonPath("$.content", endsWith("Evgeniy!")));
 
 	}
 }
