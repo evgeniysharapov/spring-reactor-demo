@@ -22,6 +22,8 @@ public class GreetingService {
 		return Streams.just(name).dispatchOn(env).map(new Function<String, Greeting>() {
 			@Override
 			public Greeting apply(String t) {
+				if (t == null || t.matches(".*\\d+.*"))
+					throw new WrongNameException();
 				return new Greeting(counter.incrementAndGet(), String.format(template, t));
 			}
 		});

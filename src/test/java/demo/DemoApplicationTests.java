@@ -57,4 +57,15 @@ public class DemoApplicationTests {
 				.andExpect(jsonPath("$.content", endsWith("Evgeniy!")));
 
 	}
+
+	@Test
+	public void shouldReturnBadRequestForABadName() throws Exception {
+		MvcResult mvcResult = mockMvc.perform(get("/greeting?name=Evgeniy1")).andExpect(request().asyncStarted())
+				.andReturn();
+
+		Object result = mvcResult.getAsyncResult();
+
+		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isBadRequest());
+
+	}
 }
