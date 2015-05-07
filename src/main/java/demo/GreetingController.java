@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import reactor.Environment;
+import reactor.bus.Event;
+import reactor.bus.EventBus;
 import reactor.rx.Promise;
 import reactor.rx.Promises;
 
@@ -17,12 +19,12 @@ public class GreetingController {
 	@Autowired
 	private Environment env;
 	@Autowired
-	private GreetingService greetingService;
+	private EventBus eventBus;
 
 	@RequestMapping("/greeting")
 	public Promise<Greeting> greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
 		Promise<Greeting> p = Promises.prepare(env);
-		p.accept(greetingService.provideGreetingFor(name));
+		eventBus.notify("/provideGreeting", Event.wrap(p));
 		return p;
 	}
 }

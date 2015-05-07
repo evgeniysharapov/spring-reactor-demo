@@ -1,5 +1,6 @@
 package demo;
 
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,6 +42,19 @@ public class DemoApplicationTests {
 
 		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk()).andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.content", startsWith("Hello")));
+
+	}
+
+	@Test
+	public void shouldReturnMessageWithName() throws Exception {
+		MvcResult mvcResult = mockMvc.perform(get("/greeting?name=Evgeniy")).andExpect(request().asyncStarted())
+				.andReturn();
+
+		Object result = mvcResult.getAsyncResult();
+
+		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk()).andExpect(jsonPath("$.id").exists())
+				.andExpect(jsonPath("$.content", startsWith("Hello")))
+				.andExpect(jsonPath("$.content", endsWith("Evgeniy")));
 
 	}
 }
