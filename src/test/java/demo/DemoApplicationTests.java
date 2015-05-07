@@ -1,8 +1,10 @@
 package demo;
 
 import static org.hamcrest.Matchers.startsWith;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Before;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -32,7 +35,12 @@ public class DemoApplicationTests {
 
 	@Test
 	public void shouldReturnMessage() throws Exception {
-		mockMvc.perform(get("/greeting")).andExpect(status().isOk()).andExpect(jsonPath("$.id").exists())
+		MvcResult mvcResult = mockMvc.perform(get("/greeting")).andExpect(request().asyncStarted()).andReturn();
+
+		Object result = mvcResult.getAsyncResult();
+
+		mockMvc.perform(asyncDispatch(mvcResult)).andExpect(status().isOk()).andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.content", startsWith("Hello")));
+
 	}
 }
